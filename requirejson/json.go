@@ -22,15 +22,14 @@ import (
 func Query(t *testing.T, jsonData []byte, jqQuery string, jsonExpected string, msgAndArgs ...interface{}) {
 	var data interface{}
 	require.NoError(t, json.Unmarshal(jsonData, &data))
-	var expected interface{}
-	require.NoError(t, json.Unmarshal([]byte(jsonExpected), &expected))
 	q, err := gojq.Parse(jqQuery)
 	require.NoError(t, err)
 	i := q.Run(data)
 	v, ok := i.Next()
 	require.True(t, ok)
-	require.IsType(t, expected, v)
-	require.Equal(t, expected, v, msgAndArgs...)
+	res, err := json.Marshal(v)
+	require.NoError(t, err)
+	require.JSONEq(t, jsonExpected, string(res), msgAndArgs...)
 }
 
 // Contains check if the json object is a subset of the jsonData.
