@@ -12,7 +12,35 @@ import (
 	"go.bug.st/testifyjson/requirejson"
 )
 
-func TestJSONQuery(t *testing.T) {
+func TestJSONFlowParadigm(t *testing.T) {
+	in := requirejson.Parse(t, []byte(`
+{
+	"id" : 1,
+	"list" : [
+		10, 20, 30
+	],
+	"emptylist" : []
+}
+`))
+
+	in.Query(".list").MustEqual("[10, 20, 30]")
+	in.Query(".list.[1]").MustEqual("20")
+
+	in.MustContain(`{ "list": [ 30 ] }`)
+	in.MustNotContain(`{ "list": [ 50 ] }`)
+
+	in.Query(".list | length").MustEqual("3")
+
+	in2 := requirejson.Parse(t, []byte(`[ ]`))
+	in2.MustBeEmpty()
+	in2.LengthMustEqualTo(0)
+
+	in3 := requirejson.Parse(t, []byte(`[ 10, 20, 30 ]`))
+	in3.MustNotBeEmpty()
+	in3.LengthMustEqualTo(3)
+}
+
+func TestJSONAssertions(t *testing.T) {
 	in := []byte(`
 {
 	"id" : 1,
