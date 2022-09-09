@@ -42,7 +42,7 @@ func (obj *JQObject) Query(jqQuery string) *JQObject {
 	require.NoError(obj.t, err)
 	iter := q.Run(obj.data)
 	data, ok := iter.Next()
-	require.True(obj.t, ok)
+	require.True(obj.t, ok, "The json query produced no results")
 	return &JQObject{t: obj.t, data: data}
 }
 
