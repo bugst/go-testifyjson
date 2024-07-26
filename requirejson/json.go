@@ -113,6 +113,21 @@ func (obj *JQObject) MustNotBeEmpty(msgAndArgs ...interface{}) {
 	}
 }
 
+// IsTrue test if the JQObject is `true`.
+func (obj *JQObject) IsTrue(msgAndArgs ...interface{}) {
+	obj.MustEqual("true", msgAndArgs...)
+}
+
+// IsFalse test if the JQObject is `false`.
+func (obj *JQObject) IsFalse(msgAndArgs ...interface{}) {
+	obj.MustEqual("false", msgAndArgs...)
+}
+
+// ArrayMustContain checks if the give JQObject contains the given element.
+func (obj *JQObject) ArrayMustContain(jsonElement string, msgAndArgs ...interface{}) {
+	obj.Query(`any(. == ` + jsonElement + `)`).IsTrue(msgAndArgs...)
+}
+
 // Query performs a test on a given json output. A jq-like query is performed
 // on the given jsonData and the result is compared with jsonExpected.
 // If the output doesn't match the test fails. If msgAndArgs are provided they

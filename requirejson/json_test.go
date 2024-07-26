@@ -65,4 +65,6 @@ func TestJSONAssertions(t *testing.T) {
 	requirejson.Len(t, in3, 3)
 
 	requirejson.Query(t, in, ".list | length", "3")
+
+	requirejson.Parse(t, in).Query(".list").ArrayMustContain("20")
 }
