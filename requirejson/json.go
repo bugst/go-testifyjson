@@ -9,6 +9,7 @@ package requirejson
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/itchyny/gojq"
@@ -31,6 +32,16 @@ func (obj *JQObject) String() string {
 // If jsonData is not a valid json the test fails.
 func Parse(t *testing.T, jsonData []byte, msgAndArgs ...interface{}) *JQObject {
 	var data interface{}
+	require.NoError(t, json.Unmarshal(jsonData, &data), msgAndArgs...)
+	return &JQObject{t: t, data: data}
+}
+
+// ParseFromFile creates a new JQObect from the given file path.
+// If the file is not a valid json the test fails.
+func ParseFromFile(t *testing.T, filePath string, msgAndArgs ...interface{}) *JQObject {
+	var data interface{}
+	jsonData, err := os.ReadFile(filePath)
+	require.NoError(t, err, msgAndArgs...)
 	require.NoError(t, json.Unmarshal(jsonData, &data), msgAndArgs...)
 	return &JQObject{t: t, data: data}
 }
