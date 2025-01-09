@@ -7,8 +7,10 @@
 package requirejson_test
 
 import (
+	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"go.bug.st/testifyjson/requirejson"
 )
 
@@ -67,4 +69,27 @@ func TestJSONAssertions(t *testing.T) {
 	requirejson.Query(t, in, ".list | length", "3")
 
 	requirejson.Parse(t, in).Query(".list").ArrayMustContain("20")
+}
+
+func TestParseFromFile(t *testing.T) {
+	in := []byte(`
+{
+	"id" : 1,
+	"list" : [
+		10, 20, 30
+	]
+}
+`)
+
+	tmpDir := t.TempDir()
+	testFile, err := os.CreateTemp(tmpDir, "test.json")
+	require.NoError(t, err)
+	_, err = testFile.Write(in)
+	require.NoError(t, err)
+	require.NoError(t, testFile.Close())
+
+	obj := requirejson.ParseFromFile(t, testFile.Name())
+	obj.Query(".id").MustEqual("1")
+	obj.Query(".list").ArrayMustContain("20")
+	obj.Query(".list | length").MustEqual("3")
 }
